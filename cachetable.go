@@ -19,23 +19,30 @@ type CacheTable struct {
 	sync.RWMutex
 
 	// The table's name.
+	// 表名
 	name string
 	// All cached items.
+	// 一个表中所有的缓存项都存在这个map中
 	items map[interface{}]*CacheItem
 
 	// Timer responsible for triggering cleanup.
+	// 负责触发时清楚操作的定时器
 	cleanupTimer *time.Timer
 	// Current timer duration.
+	// 负责清除的操作的时间间隔
 	cleanupInterval time.Duration
 
 	// The logger used for this table.
 	logger *log.Logger
 
 	// Callback method triggered when trying to load a non-existing key.
+	//需要提取一个不存在的key时触发的回调函数
 	loadData func(key interface{}, args ...interface{}) *CacheItem
 	// Callback method triggered when adding a new item to the cache.
+	//增加一个缓存条目时触发的回调函数
 	addedItem []func(item *CacheItem)
 	// Callback method triggered before deleting an item from the cache.
+	//删除前触发的回调函数
 	aboutToDeleteItem []func(item *CacheItem)
 }
 
@@ -76,7 +83,7 @@ func (table *CacheTable) SetAddedItemCallback(f func(*CacheItem)) {
 	table.addedItem = append(table.addedItem, f)
 }
 
-//AddAddedItemCallback appends a new callback to the addedItem queue
+// AddAddedItemCallback appends a new callback to the addedItem queue
 func (table *CacheTable) AddAddedItemCallback(f func(*CacheItem)) {
 	table.Lock()
 	defer table.Unlock()

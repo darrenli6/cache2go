@@ -14,6 +14,7 @@ import (
 
 // CacheItem is an individual cache item
 // Parameter data contains the user-set value in the cache.
+// CacheItem类型是用来表示一个单独的缓存条目
 type CacheItem struct {
 	sync.RWMutex
 
@@ -22,6 +23,7 @@ type CacheItem struct {
 	// The item's data.
 	data interface{}
 	// How long will the item live in the cache when not being accessed/kept alive.
+	// 不被访问的存活时间
 	lifeSpan time.Duration
 
 	// Creation timestamp.
@@ -32,6 +34,7 @@ type CacheItem struct {
 	accessCount int64
 
 	// Callback method triggered right before removing the item from the cache
+	// 删除前的回调
 	aboutToExpire []func(key interface{})
 }
 
@@ -40,6 +43,13 @@ type CacheItem struct {
 // Parameter lifeSpan determines after which time period without an access the item
 // will get removed from the cache.
 // Parameter data is the item's value.
+/*
+
+NewCacheItem()函数接收3个参数，分别是键、值、存活时间（key、data、lifeSpan），返回一个CacheItem类型实例的指针。
+其中createOn和accessedOn设置成了当前时间，aboutToExpire也就是被删除时触发的回调方法暂时设置成nil，
+不难想到这个函数完成后还需要调用其他方法来设置这个属性。
+
+*/
 func NewCacheItem(key interface{}, lifeSpan time.Duration, data interface{}) *CacheItem {
 	t := time.Now()
 	return &CacheItem{
@@ -101,6 +111,7 @@ func (item *CacheItem) Data() interface{} {
 
 // SetAboutToExpireCallback configures a callback, which will be called right
 // before the item is about to be removed from the cache.
+// 【设置回调函数，当一个item被移除的时候这个函数会被调用】
 func (item *CacheItem) SetAboutToExpireCallback(f func(interface{})) {
 	if len(item.aboutToExpire) > 0 {
 		item.RemoveAboutToExpireCallback()

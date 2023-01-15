@@ -11,18 +11,25 @@ func main() {
 
 	// The data loader gets called automatically whenever something
 	// tries to retrieve a non-existing key from the cache.
+	//【当从cache中访问一个不存在的key时会触发这个回调函数】
+	// 自动缓冲
 	cache.SetDataLoader(func(key interface{}, args ...interface{}) *cache2go.CacheItem {
 		// Apply some clever loading logic here, e.g. read values for
 		// this key from database, network or file.
+		//【这里可以做一些机智的处理，比如说从数据库，网络或者文件中读取数据，这当然也是缓存的意义】
+		//key.(string)是类型断言，将interface{}类型的数据转回到string类型
 		val := "This is a test with key " + key.(string)
 
 		// This helper method creates the cached item for us. Yay!
+
 		item := cache2go.NewCacheItem(key, 0, val)
 		return item
 	})
 
 	// Let's retrieve a few auto-generated items from the cache.
+	//【试着检索一些自动生成的items】
 	for i := 0; i < 10; i++ {
+		//【将i转换为字符串，拼接成someKey_1的形式】
 		res, err := cache.Value("someKey_" + strconv.Itoa(i))
 		if err == nil {
 			fmt.Println("Found value in cache:", res.Data())
